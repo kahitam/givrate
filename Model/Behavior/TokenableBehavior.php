@@ -4,7 +4,7 @@ class TokenableBehavior extends ModelBehavior {
 
 	var $__settings = array();
 
-	public function setup(&$Model, $settings = array()) {
+	public function setup(Model $Model, $settings = array()) {
 		if (!isset($this->_settings[$Model->alias])) {
 			$this->__settings[$Model->alias] = array(
 				'enabled' => true,
@@ -26,7 +26,7 @@ class TokenableBehavior extends ModelBehavior {
 		)), false);
 	}
 
-	public function beforeSave(&$Model) {
+	public function beforeSave(Model $Model, $options = array()) {
 		if (!$this->__settings[$Model->alias]['enabled']) {
 			return false;
 		}
@@ -50,7 +50,7 @@ class TokenableBehavior extends ModelBehavior {
 		return false;
 	}
 
-	public function afterSave(&$Model, $created) {
+	public function afterSave(Model $Model, $created, $options = array()) {
 		$tokenField = $this->__settings[$Model->alias]['tokenField'];
 		if ($created) {
 			return $this->__saveToken($Model, $Model->data[$Model->alias][$tokenField]);

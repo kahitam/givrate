@@ -8,7 +8,7 @@ class GivrateHelper extends AppHelper {
 	protected $_Rating = null;
 	protected $_RateCalculate = null;
 
-	public function beforeRender() {
+	public function beforeRender($viewFile) {
 		$params = $this->_View->params;
 		if (isset($params['isAjax']) && $params['isAjax'] === true) {
 			return;
