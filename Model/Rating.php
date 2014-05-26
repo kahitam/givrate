@@ -171,7 +171,7 @@ class Rating extends GivrateAppModel {
 		}
 	}
 
-	public function afterSave($created) {
+	public function afterSave($created, $options = array()) {
 		if ($created) {
 			$this->_calculateRating($this->data);
 		}
