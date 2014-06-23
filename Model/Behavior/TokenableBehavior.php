@@ -15,13 +15,28 @@ class TokenableBehavior extends ModelBehavior {
 			);
 		}
 		$this->__settings[$Model->alias] = Set::merge($this->__settings[$Model->alias], $settings);
-		$Model->bindModel(array('hasOne' => array(
+
+		$this->_setupRelationships($Model);
+	}
+
+	protected function _setupRelationships(Model $model) {
+		$model->bindModel(array('hasOne' => array(
 			'Token' => array(
 				'className' => 'Givrate.Token',
 				'foreignKey' => 'foreign_key',
+				'dependent' => true,
 				'unique' => true,
-				'conditions' => '',
-				'fields' => '',
+				'conditions' => array(
+					'moldel' => $model->alias
+				),
+			)
+		)), false);
+
+		$model->Token->bindModel(array('belongsTo' => array(
+			$model->alias => array(
+				'className' => $model->name,
+				'foreignKey' => 'foreign_key',
+				'counterCache' => false
 			)
 		)), false);
 	}
@@ -36,7 +51,6 @@ class TokenableBehavior extends ModelBehavior {
 			return true;
 		}
 
-		$this->Token =& ClassRegistry::init('Givrate.Token');
 		$len = $this->__settings[$Model->alias]['tokenLength'];
 
 		for ($i = 0; $i < 10; $i++) {
@@ -50,6 +64,21 @@ class TokenableBehavior extends ModelBehavior {
 		return false;
 	}
 
+	public function beforeDelete(Model $model, $cascade = true) {
+		if ($this->__deleteToken($model)) {
+			return true;
+		}
+		return false;
+	}
+
+	protected function __deleteToken(Model $model) {
+		if (!$model->id) return false;
+		return $model->Token->deleteAll(array(
+			'Token.model' => $model->alias,
+			'Token.foreign_key' => $model->id,
+		), false);
+	}
+
 	public function afterSave(Model $Model, $created, $options = array()) {
 		$tokenField = $this->__settings[$Model->alias]['tokenField'];
 		if ($created) {
@@ -58,14 +87,13 @@ class TokenableBehavior extends ModelBehavior {
 		return true;
 	}
 
-	public function __saveToken(&$Model, $token) {
-		$this->Token =& ClassRegistry::init('Givrate.Token');
-		$token = $this->Token->create(array(
+	public function __saveToken(Model $Model, $token) {
+		$token = $Model->Token->create(array(
 			'model' => $Model->alias,
 			'foreign_key' => $Model->id,
 			'token' => $token,
 		));
-		return $this->Token->save($token);
+		return $Model->Token->save($token);
 	}
 
 	public function __isValidToken($token) {
