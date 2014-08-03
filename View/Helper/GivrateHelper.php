@@ -61,6 +61,7 @@ class GivrateHelper extends AppHelper {
 					$link = '';
 				}
 				$point = empty($result['RateCalculate'][$field]) ? 0 : $result['RateCalculate'][$field];
+				$divClass = 'point-vote';
 			break;
 			case 'rating':
 			default:
@@ -71,6 +72,7 @@ class GivrateHelper extends AppHelper {
 					$link = '';
 				}
 				$point = empty($result['RateCalculate'][$field]) ? 0 : number_format($result['RateCalculate'][$field], 1);
+				$divClass = 'point-rating';
 			break;
 		}
 		unset($options['ratelink']);
@@ -78,7 +80,7 @@ class GivrateHelper extends AppHelper {
 
 		$point = empty($result['RateCalculate'][$field]) ? 0 : $point;
 		$istar = $this->Html->tag('i', '', array('class' => 'flaticon-outline'));
-		$point = $this->Html->div('avg text-left', $istar . $this->Html->tag('span',$point, array(
+		$point = $this->Html->div($divClass, $istar . $this->Html->tag('span',$point, array(
 			'class' => 'point-' . $display
 			))) . $link;
 		return $point;
