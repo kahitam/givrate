@@ -21,6 +21,13 @@ class UserPoint extends GivrateAppModel {
 		)
 	);
 
+	public $findMethods = array(
+		'bestPoint' => true
+	);
+
+/**
+ * countMyPoint method
+ */
 	public function countMyPoint($userId, $value, $type, $status) {
 		$userPoint = $this->find('first', array(
 			'conditions' => array(
@@ -59,6 +66,9 @@ class UserPoint extends GivrateAppModel {
 		}
 	}
 
+/**
+ * getMyPoint method
+ */
 	public function getMyPoint($userId, $status = null, $type = null) {
 		$conditions = array(
 			'UserPoint.user_id' => $userId
@@ -77,5 +87,40 @@ class UserPoint extends GivrateAppModel {
 			'conditions' => $conditions
 		));
 		return $mypoint;
+	}
+
+/**
+ * _findBestPoint method
+ *
+ * @return array
+ */
+	public function _findbestPoint($state, $query, $results = array()) {
+		if ($state == 'before') {
+			$status = isset($query['status']) ? $query['status'] : null;
+			$type = isset($query['type']) ? $query['type'] : null;
+			$pointLength = isset($query['pointLength']) ? $query['pointLength'] : null;
+
+			if (!is_null($status)) {
+				$query['conditions'] = Hash::merge(array(
+					$this->escapeField('status') => $status
+				), $query['conditions']);
+			}
+			if (!is_null($type)) {
+				$query['conditions'] = Hash::merge(array(
+					$this->escapeField('type') => $type
+				), $query['conditions']);
+			}
+			if (!is_null($pointLength)) {
+				$query['conditions'] = Hash::merge(array(
+					$this->escapeField('points') . ' >' => $pointLength
+				), $query['conditions']);
+			}
+			$query = Hash::merge(array(
+				'order' => $this->escapeField('point_date') . ' DESC'
+			), $query);
+			return $query;
+		} else {
+			return $results;
+		}
 	}
 }
