@@ -97,7 +97,7 @@ class TokenableBehavior extends ModelBehavior {
 	}
 
 	public function __isValidToken($token) {
-		$this->Token =& ClassRegistry::init('Givrate.Token');
+		$this->Token = ClassRegistry::init('Givrate.Token');
 		$count = $this->Token->find('count', array(
 			'conditions' => array(
 				'Token.token' => $token,
