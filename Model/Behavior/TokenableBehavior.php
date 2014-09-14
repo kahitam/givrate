@@ -27,7 +27,7 @@ class TokenableBehavior extends ModelBehavior {
 				'dependent' => true,
 				'unique' => true,
 				'conditions' => array(
-					'moldel' => $model->alias
+					'model' => $model->alias
 				),
 			)
 		)), false);
